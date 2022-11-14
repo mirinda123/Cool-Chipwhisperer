@@ -1,2 +1,2 @@
 # Cool-Chipwhisperer
-Chipwhisperer的使用和踩坑
+Chipwhisperer和其他侧信道硬件的使用和踩坑

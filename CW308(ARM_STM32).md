@@ -509,7 +509,7 @@ print(status)
 
 # 使用Pico示波器的Rapid模式加快数据采集
 
-前面的采集是BLOCK模式，示波器还有一个Rapid模式。可以一次性采集多条，可参考[这里](https://github.com/picotech/picosdk-python-wrappers/blob/master/ps5000aExamples/ps5000aRapidBlockExample.py)、 另一个文件 和 [PicoScope 5000 Series (A API) Programmer's Guide](https://www.picotech.com/download/manuals/picoscope-5000-series-a-api-programmers-guide.pdf)
+前面的采集是BLOCK模式，示波器还有一个Rapid模式。可以一次性采集多条，可参考[这里](https://github.com/picotech/picosdk-python-wrappers/blob/master/ps5000aExamples/ps5000aRapidBlockExample.py)、 本目录下的另一个文件 和 [PicoScope 5000 Series (A API) Programmer's Guide](https://www.picotech.com/download/manuals/picoscope-5000-series-a-api-programmers-guide.pdf)
 
 
 
@@ -568,6 +568,8 @@ test_func:
 ```
 
 # 一些坑：
+
+0. 如果采集不到信号、触发，或采集数据质量差，首先检查接线是否无误。
 
 1. 示波器开机第一次采集的时候，有几率会采集错误，开头的几条曲线都是`[ 32512  32512  32512 ...  32512  32512  32512]`这样的错误数值。此时**无需**重启示波器，只需重新运行采集的那部分代码块即可。
 

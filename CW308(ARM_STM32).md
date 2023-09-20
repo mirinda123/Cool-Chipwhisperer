@@ -12,7 +12,7 @@ Pico示波器Python脚本：https://github.com/picotech/picosdk-python-wrappers
 
 <img src="https://205e55-1258657022.cos.ap-nanjing.myqcloud.com/chipwhisper/20221114155607.jpg" style="zoom: 25%;" />
 
-粉色的波形采集线要连接到Chipwhisperer-Lite的MEASURE口而不是GLITCH口
+粉色的波形采集线要连接到Chipwhisperer-Lite的MEASURE端而不是GLITCH端
 
 ## c与asm程序
 
@@ -37,11 +37,11 @@ uint8_t process(uint8_t* data, uint8_t dlen)
 	trigger_high();		//触发设置为高电平
     //设置触发的代码可以写成汇编形式:
     // 	    asm volatile(
-	//   "PUSH {r0-r12}\n\t"
-    //	 "PUSH {lr}}\n\t"
-	//   "BL  trigger_high\n\t"	
-    //   "POP {lr}\n\t"
-	// 	 "POP {r0-r12}\n\t"
+	//   "PUSH {r0-r12}"
+    //	 "PUSH {lr}}"
+	//   "BL  trigger_high"	
+    //   "POP {lr}"
+	// 	 "POP {r0-r12}"
 	// );
     uint8_t result = your_function();
 	trigger_low();		//触发设置为低电平
@@ -111,7 +111,7 @@ Jupyter脚本放在`D:\ChipWhisperer5_64\cw\home\portable\chipwhisperer\tutorial
 
 ```python
 SCOPETYPE = 'OPENADC'
-PLATFORM = 'CW308_STM32F3'
+PLATFORM = 'CW308_STM32F3' 如果用的是带随机数的板子，则这里是CW308_STM32F4
 SS_VER = 'SS_VER_1_1'
 ```
 
@@ -221,7 +221,7 @@ for p in range(part):  # 遍历所有的part
     np.save(filename_of_traces + "textinPart{0}.npy".format(p + part_start_index), text_in_arr)
     np.save(filename_of_traces + "textoutPart{0}.npy".format(p + part_start_index), text_out_arr)
     counter += 1
-    del traces_array  # 回收
+    del traces_array  # 回收内存
     del text_in_arr
     del text_out_arr
     gc.collect()
@@ -582,9 +582,9 @@ test_func:
 
 5. `.S` 文件不要和.c文件同名，否则会被makefile删掉
 
-6. `.S`一定要大写
+6. `.S`这个后缀名一定要大写
 
-7. 如果采集看不到触发的上升沿或者下降沿，可能是示波器采集范围太短，另一种可能是代码执行过程中出错。对于后者，找到代码出错点的方法是，在代码中的不同位置放置`trigger_high()`。如果仍然出现玄学错误，考虑把蓝色板子卸下重新插拔，或是参考[这个](https://github.com/newaetech/chipwhisperer-jupyter/blob/master/demos/Debugging%20the%20CW308_STM32F3%20Using%20ChipWhisperer.ipynb)调bug.
+7. 如果采集看不到触发的上升沿或者下降沿，可能是示波器采集范围太短，另一种可能是代码执行过程中出错。对于后者，找到代码出错点的方法是，在代码中的不同位置放置`trigger_high()`。如果仍然出现玄学错误，考虑把蓝色板子卸下重新插拔，或是参考[这个](https://github.com/newaetech/chipwhisperer-jupyter/blob/master/demos/Debugging%20the%20CW308_STM32F3%20Using%20ChipWhisperer.ipynb)上板子调bug.
 
    ```
    arm-none-eabi-gdb simpleserial-aes-CW308_STM32F3.elf -ex "target extended-remote localhost:3333" -ex "monitor reset halt" -ex "load"
@@ -602,3 +602,9 @@ test_func:
 11. 不要用malloc，之前用malloc出了奇怪的错误
 
 12. 配置栈空间和堆空间的配置文件在ChipWhisperer5_64\cw\home\portable\chipwhisperer\hardware\victims\firmware\hal\stm32f3(stm32f4) 下面的LinkerScript.ld
+
+13. 如果出现玄学错误，尝试在target.simpleserial_write()后面，time.sleep()多睡一段时间。
+
+14. 自动触发：status["trigger"] = ps.ps5000aSetSimpleTrigger(chandle, 1, source, threshold, 2, 0, 1000) 中最后一个参数，表示如果1s内没有触发，则这里会自动触发。如果你的算法跑的时间特别长，则需要延长自动触发时间。
+
+15. STM32F4的RNG有玄学问题，正在条
